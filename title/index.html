@@ -1,6 +1,7 @@
 <!DOCTYPE html><html><head><meta charset="utf-8"><title>THE MUNCHIES™</title>
 <style>html,body{margin:0;background:#000;height:100%;overflow:hidden}canvas{display:block;margin:auto;max-width:100vw;max-height:100vh}</style></head>
-<body><div style="display:none"><img src="art/bg.jpg"><img src="art/logo.png"><img src="art/mac.png"><img src="art/glaze.png"><img src="art/nacho.png"><img src="art/fryguy.png"><img src="art/shakey.png"><img src="art/brocmed.png"></div><canvas id="c" width="1280" height="720"></canvas><script>
+<body><div style="display:none"><img src="art/bg.jpg"><img src="art/logo.png"><img src="art/mac.png"><img src="art/glaze.png"><img src="art/nacho.png"><img src="art/fryguy.png"><img src="art/shakey.png"><img src="art/brocmed.png"></div><canvas id="c" width="1280" height="720"></canvas><script src="../sidescroller/audio.js"></script><script>
+SND.music('title');const sfx=n=>SND.play(n);let going=0;
 const c=document.getElementById('c'),x=c.getContext('2d');
 const load=s=>{const i=new Image();i.src=s;return i};
 const bg=load('art/bg.jpg'),logo=load('art/logo.png');
@@ -21,9 +22,9 @@ function frame(now){const t=(now-t0)/1000;
  menu.forEach((m,i)=>glow((i==sel?'▶ ':'')+m+(i==sel?' ◀':''),640,520+i*52,i==sel?38:30,i==sel?'#FFE600':'#00E5FF',i==sel?18:6));
  x.font='16px Arial';x.textAlign='center';x.fillStyle='#ddd';x.fillText('© Munchman Media LLC. All rights reserved.',640,705);
  requestAnimationFrame(frame)}
-function go(i){location.href='../sidescroller/index.html#'+['select1','select2','howto'][i]}
-addEventListener('keydown',e=>{const k=e.key;if(k=='ArrowUp'||k=='w'||k=='W')sel=(sel+2)%3;else if(k=='ArrowDown'||k=='s'||k=='S')sel=(sel+1)%3;else if(k=='Enter'||k==' '||k=='j'||k=='J')go(sel)});
+function go(i){if(going)return;going=1;sfx('select');SND.stopMusic();setTimeout(()=>location.href='../sidescroller/index.html#'+['select1','select2','howto'][i],220)}
+addEventListener('keydown',e=>{const k=e.key;if(k=='ArrowUp'||k=='w'||k=='W'){sel=(sel+2)%3;sfx('nav')}else if(k=='ArrowDown'||k=='s'||k=='S'){sel=(sel+1)%3;sfx('nav')}else if(k=='Enter'||k==' '||k=='j'||k=='J')go(sel)});
 document.querySelector('canvas').addEventListener('pointerdown',e=>{const r=e.target.getBoundingClientRect(),y=(e.clientY-r.top)*720/r.height;for(let i=0;i<3;i++)if(Math.abs(y-(508+i*52))<24){sel=i;go(i)}});
-let gpPrev=0;setInterval(()=>{const g=(navigator.getGamepads?navigator.getGamepads():[])[0];if(!g)return;const v=g.axes[1]||0,u=g.buttons[12]&&g.buttons[12].pressed,d=g.buttons[13]&&g.buttons[13].pressed,a=g.buttons[0].pressed||g.buttons[9].pressed;const st=(u||v<-.5)?1:(d||v>.5)?2:a?3:0;if(st!=gpPrev){if(st==1)sel=(sel+2)%3;if(st==2)sel=(sel+1)%3;if(st==3)go(sel)}gpPrev=st},60);
+let gpPrev=0;setInterval(()=>{const g=(navigator.getGamepads?navigator.getGamepads():[])[0];if(!g)return;const v=g.axes[1]||0,u=g.buttons[12]&&g.buttons[12].pressed,d=g.buttons[13]&&g.buttons[13].pressed,a=g.buttons[0].pressed||g.buttons[9].pressed;const st=(u||v<-.5)?1:(d||v>.5)?2:a?3:0;if(st!=gpPrev){if(st==1){sel=(sel+2)%3;sfx('nav')}if(st==2){sel=(sel+1)%3;sfx('nav')}if(st==3)go(sel)}gpPrev=st},60);
 addEventListener('load',()=>{t0=performance.now();frame(t0)});
 </script></body></html>
