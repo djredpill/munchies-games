@@ -197,7 +197,7 @@ function updateBoss(){const b=boss;if(!b||b.hp<=0)return;b.t++;if(b.flashT>0)b.f
  // birds
  const free=birds.filter(x=>!x.perched&&!x.gone);
  for(const r of birds){if(r.gone){r.y-=4;r.x+=r.side*6;continue}if(r.flashT>0)r.flashT--;r.t++;
-  if(r.perched){r.x=b.x+r.side*62*-b.face*-1;r.y=-300+Math.sin(frame*.08+r.side)*3;continue}
+  if(r.perched){r.x=b.x-r.side*62*b.face;/* per char sheets: Stem (side 1, glowing RIGHT eye) on Count's RIGHT shoulder, Stalk (side -1, glowing LEFT eye) on his LEFT; Count faces viewer 3/4, so his right = viewer-left when face=1; seeing eyes face outward */r.y=-300+Math.sin(frame*.08+r.side)*3;continue}
   const tp=nearestP(r.x)||{x:b.x,y:0};
   if(r.st=='fall'){r.vy+=.6;r.x+=r.vx;r.y+=r.vy;if(r.y>-60){r.st='hover';r.t=0}}
   else if(r.st=='hover'){const hx=tp.x+(r.name=='stem'?-220:220),hy=r.name=='stem'?-380:-320;r.x+=(hx-r.x)*.04;r.y+=(hy-r.y)*.05;
@@ -334,7 +334,7 @@ function drawBoss(){const b=boss;if(!b)return;
  for(const r of birds){const im=IMG(r.name),hh=r.perched?95:130,flap=1;
   X.save();X.translate(r.x,GY+r.y);X.scale(1,flap);X.translate(-r.x,-(GY+r.y));
   const rp=r.flashT>0||r.st=='fall'?'hurt':/dive|swoop|atk|attack/.test(r.st||'')?'attack':'fly';
-  if(!anim(r.name,rp,frame+(r.side>0?5:0),r.perched?12:5,r.x,GY+r.y+hh/2,hh*1.25,r.perched?-(r.side):(r.vx<0?-1:1),{flash:r.flashT>0,alpha:r.gone?.5:1}))sprite(im,r.x,GY+r.y+hh/2,hh,r.vx<0?-1:1,{flash:r.flashT>0,alpha:r.gone?.5:1});X.restore();
+  if(!anim(r.name,rp,frame+(r.side>0?5:0),r.perched?12:5,r.x,GY+r.y+hh/2,hh*1.25,r.perched?b.face:1,{flash:r.flashT>0,alpha:r.gone?.5:1}))sprite(im,r.x,GY+r.y+hh/2,hh,r.vx<0?-1:1,{flash:r.flashT>0,alpha:r.gone?.5:1});X.restore();
   if(r.perched){X.save();X.globalAlpha=.25+.15*Math.sin(frame*.1);X.fillStyle=r.name=='stem'?'#96991A':'#A7AE56';X.beginPath();X.moveTo(r.x,GY+r.y);X.arc(r.x,GY+r.y,170,(b.face>0?-1:1)*0+(b.face>0?-2.36:0.78),(b.face>0?2.36:5.5));X.fill();X.restore()}}}
 function drawCiv(c){const img=IMG(c.img),hop=Math.abs(Math.sin(c.t*1.4))*10;shadow(c.x,30);
  c.at=(c.at||0)+1;const cheer=c.free&&c.cheer>0;
